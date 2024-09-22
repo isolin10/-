@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
-    <TextView
+    <!-- 其他UI元素 -->
+
+    <Button
+        android:id="@+id/add_sensor_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="感測器頁面"
-        android:layout_gravity="center" />
+        android:text="+ 新增感測器"
+        android:layout_gravity="center"
+        android:backgroundTint="@android:color/holo_blue_light"
+        android:textColor="@android:color/white" />
+
 </FrameLayout>

@@ -139,8 +139,8 @@ class PostFragment : Fragment() {
 
         // Fetch user data from Realtime Database
         db.child("Users").child(userId).get().addOnSuccessListener { snapshot ->
-            val username = snapshot.child("username").value.toString()
-            val profileImageUrl = snapshot.child("profileImageUrl").value.toString()
+            val username = snapshot.child("username").value?.toString() ?: "Unknown"
+            val profileImageUrl = snapshot.child("profileImageUrl").value?.toString() ?: ""
 
             // Upload image to Firebase Storage
             val fileName = UUID.randomUUID().toString()
@@ -165,22 +165,26 @@ class PostFragment : Fragment() {
     }
 
     private fun savePostToRealtimeDatabase(content: String, imageUrl: String, username: String, profileImageUrl: String, userId: String) {
-        // Create post data
-        val post = hashMapOf(
-            "userId" to userId,
-            "username" to username,
-            "profileImageUrl" to profileImageUrl,
-            "content" to content,
-            "imageUrl" to imageUrl,
-            "timestamp" to System.currentTimeMillis()  // 可用於排序貼文
+        // 生成唯一的 postId
+        val postId = db.child("posts").push().key ?: return
+
+        // 建立貼文資料
+        val post = Post(
+            postId = postId,
+            userId = userId,
+            username = username,
+            profileImageUrl = profileImageUrl,
+            content = content,
+            imageUrl = imageUrl,
+            timestamp = System.currentTimeMillis()  // 可用於排序貼文
         )
 
-        // Save post to Realtime Database
-        db.child("posts").push()
+        // 儲存貼文到 Realtime Database
+        db.child("posts").child(postId)
             .setValue(post)
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "貼文已發布", Toast.LENGTH_SHORT).show()
-                // Clear input and selected image
+                // 清除輸入框和選擇的圖片
                 postContent.text.clear()
                 selectedImageUri = null
                 flexboxLayout.removeAllViews()
