@@ -30,7 +30,7 @@ class PostFragment : Fragment() {
     private lateinit var saveToAlbum: TextView
 
     private val PICK_IMAGE_REQUEST = 1
-    private var selectedImageUri: Uri? = null
+    private var selectedImageUris = mutableListOf<Uri>()
     private val db = FirebaseDatabase.getInstance().reference
     private val storage = FirebaseStorage.getInstance()
     private val auth = FirebaseAuth.getInstance()
@@ -64,19 +64,6 @@ class PostFragment : Fragment() {
             publishPost()
         }
 
-        // Handle expandable items
-        addSubject.setOnClickListener {
-            Snackbar.make(view, "新增主題點擊", Snackbar.LENGTH_SHORT).show()
-        }
-
-        addLocation.setOnClickListener {
-            Snackbar.make(view, "新增地址點擊", Snackbar.LENGTH_SHORT).show()
-        }
-
-        saveToAlbum.setOnClickListener {
-            Snackbar.make(view, "儲存至相簿點擊", Snackbar.LENGTH_SHORT).show()
-        }
-
         return view
     }
 
@@ -98,7 +85,7 @@ class PostFragment : Fragment() {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == Activity.RESULT_OK && data != null) {
             val imageUri: Uri? = data.data
             imageUri?.let {
-                selectedImageUri = it
+                selectedImageUris.add(it)
                 addImageView(it)
             }
         }
@@ -114,7 +101,7 @@ class PostFragment : Fragment() {
         // Set click listener to remove image on click
         imageView.setOnClickListener {
             flexboxLayout.removeView(it)
-            selectedImageUri = null
+            selectedImageUris.remove(imageUri)
             Toast.makeText(requireContext(), "圖片已刪除", Toast.LENGTH_SHORT).show()
         }
 
@@ -122,15 +109,11 @@ class PostFragment : Fragment() {
         flexboxLayout.addView(imageView, flexboxLayout.childCount - 1)
     }
 
-    private fun saveDraft() {
-        // Save draft logic, store content locally
-    }
-
     private fun publishPost() {
         val content = postContent.text.toString().trim()
         val user = auth.currentUser
 
-        if (user == null || selectedImageUri == null || content.isEmpty()) {
+        if (user == null || selectedImageUris.isEmpty() || content.isEmpty()) {
             Toast.makeText(requireContext(), "請選擇圖片並填寫內容", Toast.LENGTH_SHORT).show()
             return
         }
@@ -142,17 +125,19 @@ class PostFragment : Fragment() {
             val username = snapshot.child("username").value?.toString() ?: "Unknown"
             val profileImageUrl = snapshot.child("profileImageUrl").value?.toString() ?: ""
 
-            // Upload image to Firebase Storage
-            val fileName = UUID.randomUUID().toString()
-            val storageRef = storage.reference.child("posts/$fileName")
+            val uploadImageUrls = mutableListOf<String>()
 
-            selectedImageUri?.let { uri ->
+            selectedImageUris.forEachIndexed { index, uri ->
+                val fileName = UUID.randomUUID().toString()
+                val storageRef = storage.reference.child("posts/$fileName")
+
                 storageRef.putFile(uri)
                     .addOnSuccessListener {
-                        // Image uploaded successfully, get the download URL
                         storageRef.downloadUrl.addOnSuccessListener { downloadUri ->
-                            // Save post to Realtime Database with user data
-                            savePostToRealtimeDatabase(content, downloadUri.toString(), username, profileImageUrl, userId)
+                            uploadImageUrls.add(downloadUri.toString())
+                            if (uploadImageUrls.size == selectedImageUris.size) {
+                                savePostToRealtimeDatabase(content, uploadImageUrls, username, profileImageUrl, userId)
+                            }
                         }
                     }
                     .addOnFailureListener {
@@ -164,34 +149,34 @@ class PostFragment : Fragment() {
         }
     }
 
-    private fun savePostToRealtimeDatabase(content: String, imageUrl: String, username: String, profileImageUrl: String, userId: String) {
-        // 生成唯一的 postId
+    private fun savePostToRealtimeDatabase(content: String, imageUrls: List<String>, username: String, profileImageUrl: String, userId: String) {
         val postId = db.child("posts").push().key ?: return
 
-        // 建立貼文資料
         val post = Post(
             postId = postId,
             userId = userId,
             username = username,
             profileImageUrl = profileImageUrl,
             content = content,
-            imageUrl = imageUrl,
-            timestamp = System.currentTimeMillis()  // 可用於排序貼文
+            imageUrls = imageUrls,
+            timestamp = System.currentTimeMillis()
         )
 
-        // 儲存貼文到 Realtime Database
         db.child("posts").child(postId)
             .setValue(post)
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "貼文已發布", Toast.LENGTH_SHORT).show()
-                // 清除輸入框和選擇的圖片
                 postContent.text.clear()
-                selectedImageUri = null
+                selectedImageUris.clear()
                 flexboxLayout.removeAllViews()
                 flexboxLayout.addView(uploadImageButton)
             }
             .addOnFailureListener {
                 Toast.makeText(requireContext(), "貼文發布失敗", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun saveDraft() {
+        // Save draft logic here
     }
 }

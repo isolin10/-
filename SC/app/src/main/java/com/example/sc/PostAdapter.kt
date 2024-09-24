@@ -7,6 +7,7 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
 import com.example.sc.Post
@@ -43,7 +44,7 @@ class PostAdapter(private val postList: MutableList<Post>) : RecyclerView.Adapte
             .into(holder.profileImageView)
 
         // 加载多张图片
-        val imageUrls = post.imageUrls ?: emptyList()  // Assuming post.imageUrls is a List<String> of image URLs
+        val imageUrls = post.imageUrls ?: emptyList() // Assuming post.imageUrls is a List<String> of image URLs
         val imageAdapter = ImagePagerAdapter(holder.itemView.context, imageUrls)
         holder.viewPager.adapter = imageAdapter
         holder.dotsIndicator.setViewPager(holder.viewPager)
@@ -86,23 +87,27 @@ class PostAdapter(private val postList: MutableList<Post>) : RecyclerView.Adapte
     override fun getItemCount() = postList.size
 }
 
-class ImagePagerAdapter(private val context: Context, private val imageUrls: List<String>) : RecyclerView.Adapter<ImagePagerAdapter.ImageViewHolder>() {
+class ImagePagerAdapter(private val context: Context, private val imageUrls: List<String>) : PagerAdapter() {
 
-    class ImageViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val imageView: ImageView = itemView.findViewById(R.id.image_view)
-    }
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.item_image, parent, false)
-        return ImageViewHolder(view)
-    }
-
-    override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-        val imageUrl = imageUrls[position]
+    override fun instantiateItem(container: ViewGroup, position: Int): Any {
+        val imageView = ImageView(context)
         Glide.with(context)
-            .load(imageUrl)
-            .into(holder.imageView)
+            .load(imageUrls[position])
+            .into(imageView)
+
+        container.addView(imageView)
+        return imageView
     }
 
-    override fun getItemCount() = imageUrls.size
+    override fun getCount(): Int {
+        return imageUrls.size
+    }
+
+    override fun isViewFromObject(view: View, obj: Any): Boolean {
+        return view == obj
+    }
+
+    override fun destroyItem(container: ViewGroup, position: Int, obj: Any) {
+        container.removeView(obj as ImageView)
+    }
 }
