@@ -25,6 +25,7 @@ class PostFragment : Fragment() {
     private lateinit var flexboxLayout: FlexboxLayout
     private lateinit var uploadImageButton: Button
     private lateinit var postContent: EditText
+    private lateinit var subjectInput: EditText
     private lateinit var addSubject: TextView
     private lateinit var addLocation: TextView
     private lateinit var saveToAlbum: TextView
@@ -49,6 +50,7 @@ class PostFragment : Fragment() {
         uploadImageButton = createUploadButton()
         postContent = view.findViewById(R.id.post_content)
         addSubject = view.findViewById(R.id.add_subject)
+        subjectInput = view.findViewById(R.id.subject_input)
         addLocation = view.findViewById(R.id.add_location)
         saveToAlbum = view.findViewById(R.id.save_to_album)
 
@@ -62,6 +64,10 @@ class PostFragment : Fragment() {
 
         publishButton.setOnClickListener {
             publishPost()
+        }
+
+        addSubject.setOnClickListener {
+            toggleSubjectInput()
         }
 
         return view
@@ -111,10 +117,11 @@ class PostFragment : Fragment() {
 
     private fun publishPost() {
         val content = postContent.text.toString().trim()
+        val subject = subjectInput.text.toString().trim() // 取得主題名稱
         val user = auth.currentUser
 
-        if (user == null || selectedImageUris.isEmpty() || content.isEmpty()) {
-            Toast.makeText(requireContext(), "請選擇圖片並填寫內容", Toast.LENGTH_SHORT).show()
+        if (user == null || selectedImageUris.isEmpty() || content.isEmpty() || subject.isEmpty()) {
+            Toast.makeText(requireContext(), "請填寫所有必填內容", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -136,7 +143,7 @@ class PostFragment : Fragment() {
                         storageRef.downloadUrl.addOnSuccessListener { downloadUri ->
                             uploadImageUrls.add(downloadUri.toString())
                             if (uploadImageUrls.size == selectedImageUris.size) {
-                                savePostToRealtimeDatabase(content, uploadImageUrls, username, profileImageUrl, userId)
+                                savePostToRealtimeDatabase(content, subject, uploadImageUrls, username, profileImageUrl, userId)
                             }
                         }
                     }
@@ -149,7 +156,7 @@ class PostFragment : Fragment() {
         }
     }
 
-    private fun savePostToRealtimeDatabase(content: String, imageUrls: List<String>, username: String, profileImageUrl: String, userId: String) {
+    private fun savePostToRealtimeDatabase(content: String, subject: String, imageUrls: List<String>, username: String, profileImageUrl: String, userId: String) {
         val postId = db.child("posts").push().key ?: return
 
         val post = Post(
@@ -158,8 +165,11 @@ class PostFragment : Fragment() {
             username = username,
             profileImageUrl = profileImageUrl,
             content = content,
+            subject = subject, // 新增主題
             imageUrls = imageUrls,
-            timestamp = System.currentTimeMillis()
+            timestamp = System.currentTimeMillis(),
+            likes = 0,
+            comments = 0
         )
 
         db.child("posts").child(postId)
@@ -167,6 +177,7 @@ class PostFragment : Fragment() {
             .addOnSuccessListener {
                 Toast.makeText(requireContext(), "貼文已發布", Toast.LENGTH_SHORT).show()
                 postContent.text.clear()
+                subjectInput.text.clear()
                 selectedImageUris.clear()
                 flexboxLayout.removeAllViews()
                 flexboxLayout.addView(uploadImageButton)
@@ -174,6 +185,14 @@ class PostFragment : Fragment() {
             .addOnFailureListener {
                 Toast.makeText(requireContext(), "貼文發布失敗", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun toggleSubjectInput() {
+        if (subjectInput.visibility == View.GONE) {
+            subjectInput.visibility = View.VISIBLE
+        } else {
+            subjectInput.visibility = View.GONE
+        }
     }
 
     private fun saveDraft() {

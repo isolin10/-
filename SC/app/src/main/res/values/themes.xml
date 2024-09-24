@@ -26,5 +26,20 @@
         <item name="android:textColor">#FFFFFF</item>
     </style>
 
+    <style name="CustomDotsIndicatorStyle" parent="Theme.AppCompat.Light">
+        <item name="dotsColor">@color/light_gray</item>
+        <item name="selectedDotColor">@color/dark_gray</item>
+    </style>
+
+
+    <style name="CustomTagStyle">
+        <item name="android:background">@color/orange</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_gravity">center_vertical</item>
+    </style>
 
 </resources>

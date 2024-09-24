@@ -37,8 +37,8 @@ android {
 }
 
 dependencies {
-    implementation ("com.tbuonomo:dotsindicator:4.2")
-
+    implementation ("com.tbuonomo:dotsindicator:4.3")
+  //implementation ("com.tbuonomo.andrui:viewpagerdotsindicator:4.2")
     implementation ("androidx.recyclerview:recyclerview:1.2.1")
     implementation ("com.google.android.flexbox:flexbox:3.0.0")
     implementation ("com.github.bumptech.glide:glide:4.12.0")

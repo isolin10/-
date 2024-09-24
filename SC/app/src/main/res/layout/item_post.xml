@@ -1,9 +1,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="8dp">
 
+    <!-- 用戶資料部分 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -35,26 +37,83 @@
             android:src="@drawable/baseline_menu_24" />
     </LinearLayout>
 
-    <!-- ViewPager for multiple images -->
-    <androidx.viewpager.widget.ViewPager
-        android:id="@+id/post_viewpager"
+    <!-- ViewPager 和點導航 -->
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- ViewPager for multiple images -->
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/post_viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
         android:layout_marginTop="8dp" />
 
-    <!-- DotsIndicator for image navigation -->
-    <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
-        android:id="@+id/dots_indicator"
+        <!-- DotsIndicator for image navigation -->
+        <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
+            android:id="@+id/dots_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="8dp"
+            android:theme="@style/CustomDotsIndicatorStyle"/>
+    </LinearLayout>
+
+    <!-- 主題顯示 -->
+    <TextView
+        android:id="@+id/post_subject"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="8dp" />
+        android:text="主題"
+        android:theme="@style/CustomTagStyle"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp" />
 
+    <!-- 文章內容 -->
     <TextView
         android:id="@+id/content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Post content" />
+
+    <!-- 點讚和留言 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end"
+        android:orientation="horizontal"
+        android:paddingTop="8dp">
+
+        <!-- 點讚 -->
+        <ImageView
+            android:id="@+id/like_button"
+            android:layout_width="27dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="Like"
+            android:src="@drawable/ic_heart_outline" />
+
+        <TextView
+            android:id="@+id/like_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0" />
+
+        <!-- 留言 -->
+        <ImageView
+            android:id="@+id/comment_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_comment"
+            android:layout_marginStart="16dp"/>
+
+        <TextView
+            android:id="@+id/comment_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0" />
+    </LinearLayout>
 
 </LinearLayout>
