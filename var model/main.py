@@ -8,8 +8,6 @@ import os
 # 設定正確的工作目錄
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-# 確認變更後的工作目錄
-print("New working directory:", os.getcwd())
 
 # 1. 讀取並預處理資料
 file_path = 'plant_data.csv'  # 資料集路徑
