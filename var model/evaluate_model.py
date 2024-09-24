@@ -3,29 +3,25 @@ import pandas as pd
 from statsmodels.tsa.api import VAR
 from sklearn.metrics import mean_squared_error
 from statsmodels.stats.diagnostic import acorr_ljungbox
-from numpy.linalg import LinAlgError 
-import matplotlib.pyplot as plt
+from numpy.linalg import LinAlgError
 import os
 
 # 設定正確的工作目錄
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-def evaluate_var_model(df: pd.DataFrame, lags: int):
+pd.set_option('display.float_format', lambda x: '%.3f' % x)
+
+def evaluate_var_model(train, test, lags):
     """
     評估 VAR 模型的表現。
-    :param df: 資料 DataFrame
+    :param train: 訓練集資料
+    :param test: 測試集資料
     :param lags: VAR 模型的滯後數
     :return: 評估結果，包括 MSE, RMSE, AIC, BIC 和 Ljung-Box 檢驗的結果
     """
-    
-    # 分割資料為訓練集和測試集 (80% 訓練，20% 測試)
-    n_obs = len(df)
-    train_size = int(n_obs * 0.8)
-    train, test = df[0:train_size], df[train_size:]
-    
     # 訓練 VAR 模型
     model = VAR(train)
-    var_model = model.fit(lags, trend='c')  # 可調整 trend='nc' 無截距，或 trend='ct' 加上趨勢項
+    var_model = model.fit(lags)
     
     # 使用訓練的模型進行預測
     forecast = var_model.forecast(train.values[-lags:], steps=len(test))
@@ -41,37 +37,53 @@ def evaluate_var_model(df: pd.DataFrame, lags: int):
     except LinAlgError:
         aic = np.nan
         bic = np.nan
-        print("警告: 協方差矩陣不是正定的，無法計算 AIC 和 BIC。")
+        print(f"協方差矩陣非正定: lags={lags}，無法計算 AIC 和 BIC。")
     
     # 殘差自相關檢驗 (Ljung-Box Test)
     residuals = test.values - forecast
-    residuals_flat = residuals.flatten()  # 將殘差展平為一維數組
+    residuals_flat = residuals.flatten()
     lb_test = acorr_ljungbox(residuals_flat, lags=[lags], return_df=True)
     
-    print("VAR Model Evaluation")
-    print("----------------------")
-    print(f"MSE: {mse:.4f}")
-    print(f"RMSE: {rmse:.4f}")
-    print(f"AIC: {aic:.4f}" if not np.isnan(aic) else "AIC: 無法計算")
-    print(f"BIC: {bic:.4f}" if not np.isnan(bic) else "BIC: 無法計算")
-    print("\nLjung-Box Test for Residuals Autocorrelation:")
-    print(lb_test)
-    
-    return mse, rmse, aic, bic, lb_test, train, test, forecast
+    return mse, rmse, aic, bic, lb_test
 
-def plot_predictions(train, test, forecast):
+def cross_validation(df, lags_list):
     """
-    繪製實際值與預測值的圖形。
+    使用交叉驗證來測試不同滯後期數，並根據指標選擇最佳參數。
+    :param df: 資料 DataFrame
+    :param lags_list: 滯後期數列表
+    :return: 最佳滯後期數及其對應的指標
     """
-    plt.figure(figsize=(12, 6))
-    plt.plot(train.index[-50:], train.values[-50:], label='Train', color='blue')
-    plt.plot(test.index, test.values, label='Test', color='orange')
-    plt.plot(test.index, forecast, label='Forecast', color='green')
-    plt.title('VAR Model Predictions')
-    plt.xlabel('Date')
-    plt.ylabel('Values')
-    plt.legend()
-    plt.show()
+    # 分割資料為訓練集和測試集
+    train_size = int(len(df) * 0.8)
+    train, test = df[:train_size], df[train_size:]
+    
+    results = []
+    
+    # 遍歷滯後期數，計算每個滯後期數的評估指標
+    for lags in lags_list:
+        mse, rmse, aic, bic, lb_test = evaluate_var_model(train, test, lags)
+        results.append({
+            'lags': lags,
+            'mse': mse,
+            'rmse': rmse,
+            'aic': aic,
+            'bic': bic,
+            'lb_stat': lb_test['lb_stat'].values[0],
+            'lb_pvalue': lb_test['lb_pvalue'].values[0]
+        })
+    
+    # 將結果轉換為 DataFrame 並排序
+    results_df = pd.DataFrame(results)
+    
+    # 將結果按 MSE、AIC、BIC 排序
+    results_df = results_df.sort_values(by=['mse', 'aic', 'bic']).reset_index(drop=True)
+    
+    print("交叉驗證結果:")
+    print(results_df)
+    
+    # 返回最佳參數組合
+    best_result = results_df.iloc[0]
+    return best_result
 
 if __name__ == "__main__":
     from data_loader import load_data
@@ -84,10 +96,13 @@ if __name__ == "__main__":
     if 'date' in df.columns:
         df['date'] = pd.to_datetime(df['date'])  # 假設日期在 'date' 列
         df.set_index('date', inplace=True)
-        df = df.asfreq('H')  # 設定頻率為每小時 (根據你的資料設置頻率)
+        df = df.asfreq('H')  # 設定頻率，根據實際情況調整
 
-    # 評估模型 (設定滯後數 lags = 3)
-    mse, rmse, aic, bic, lb_test, train, test, forecast = evaluate_var_model(df, lags=3)
+    # 滯後期數列表
+    lags_list = range(1,100)
 
-    # 在模型評估結束後繪製圖形
-    plot_predictions(train, test, forecast)
+    # 執行交叉驗證
+    best_params = cross_validation(df, lags_list)
+
+    print("\n最佳參數組合:")
+    print(best_params)
