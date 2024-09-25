@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- 返回按鈕 -->
+    <ImageButton
+        android:id="@+id/back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_back_arrow"
+        android:contentDescription="Back"
+        android:background="?attr/selectableItemBackgroundBorderless" />
+
+    <!-- 植物名稱及圖片 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/plant_image"
+            android:layout_width="272dp"
+            android:layout_height="150dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_default_plant_image" />
+
+        <TextView
+            android:id="@+id/plant_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="植物名稱"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginTop="8dp" />
+    </LinearLayout>
+
+    <!-- 表格顯示數據 -->
+    <TableLayout
+        android:id="@+id/data_table"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="*"
+        android:layout_marginTop="16dp"
+        android:padding="8dp">
+
+        <!-- 表格標題 -->
+        <TableRow>
+            <TextView android:text="紀錄時間" android:textStyle="bold" />
+            <TextView android:text="溫度" android:textStyle="bold" />
+            <TextView android:text="濕度" android:textStyle="bold" />
+            <TextView android:text="光照" android:textStyle="bold" />
+            <TextView android:text="PH" android:textStyle="bold" />
+            <TextView android:text="鹽度" android:textStyle="bold" />
+        </TableRow>
+
+        <!-- 實際數據的動態生成位置 -->
+    </TableLayout>
+
+</LinearLayout>
