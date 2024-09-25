@@ -1,5 +1,9 @@
 #一些通用的工具函數，比如畫圖和模型評估。
 import matplotlib.pyplot as plt
+import os
+
+# 設定正確的工作目錄
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 def plot_loss(history):
     plt.figure(figsize=(10, 6))

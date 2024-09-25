@@ -3,6 +3,10 @@ import numpy as np
 from tensorflow.keras.callbacks import EarlyStopping
 from model import build_lstm_model
 from data_preprocessing import scale_data, create_sequences, train_test_split
+import os
+
+# 設定正確的工作目錄
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 def train_lstm_model(data, time_steps, train_size, epochs, batch_size):
     # 1. 數據處理

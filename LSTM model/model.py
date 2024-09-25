@@ -1,6 +1,10 @@
 #定義 LSTM 模型的架構和構建過程。
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Dropout
+import os
+
+# 設定正確的工作目錄
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 def build_lstm_model(input_shape):
     model = Sequential()

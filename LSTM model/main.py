@@ -2,6 +2,10 @@ import numpy as np
 from train import train_lstm_model
 from utils import plot_loss, evaluate_model
 import pandas as pd
+import os
+
+# 設定正確的工作目錄
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 # 假設你有一個 CSV 檔案儲存土壤因子數據
 data = pd.read_csv('plant_data.csv').values
