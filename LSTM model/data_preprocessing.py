@@ -26,10 +26,19 @@ def scale_data(data, time_column=None):
     return scaled_data, scaler
 
 def create_sequences(data, time_steps):
-    sequences, labels = [], []
+    # 如果 data 不是 numpy array，則將其轉換
+    if isinstance(data, pd.DataFrame):
+        data = data.values  # 只在 data 是 DataFrame 時進行轉換
+
+    sequences = []
+    labels = []
+
     for i in range(len(data) - time_steps):
-        sequences.append(data[i:i+time_steps])
-        labels.append(data[i+time_steps])
+        seq = data[i:i+time_steps]
+        label = data[i+time_steps]
+        sequences.append(seq)
+        labels.append(label)
+    
     return np.array(sequences), np.array(labels)
 
 def train_test_split(data, train_size):
@@ -37,3 +46,17 @@ def train_test_split(data, train_size):
     train_data = data[:train_data_len]
     test_data = data[train_data_len:]
     return train_data, test_data
+
+def prepare_data(file_path):
+    # 載入和預處理數據
+    data = pd.read_csv(file_path)
+    # 這裡進行縮放、拆分訓練/測試數據
+    X_train, y_train, X_test, y_test, scaler = your_data_processing_function(data)
+
+    return {
+        'X_train': X_train,
+        'y_train': y_train,
+        'X_test': X_test,
+        'y_test': y_test,
+        'scaler': scaler
+    }
