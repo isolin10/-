@@ -1,4 +1,5 @@
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
+import com.example.sc.PlantDataActivity
 import com.example.sc.Post
 import com.example.sc.R
 import com.google.firebase.database.FirebaseDatabase
@@ -53,7 +55,14 @@ class PostAdapter(private val postList: MutableList<Post>) : RecyclerView.Adapte
 
         // 加載多張圖片
         val imageUrls = post.imageUrls ?: emptyList()
-        val imageAdapter = ImagePagerAdapter(holder.itemView.context, imageUrls)
+        val imageAdapter = ImagePagerAdapter(holder.itemView.context, imageUrls) { imageUrl ->
+            // 這裡實現點擊事件跳轉到 PlantDataActivity
+            val intent = Intent(holder.itemView.context, PlantDataActivity::class.java).apply {
+                putExtra("subject", post.subject)
+                putExtra("imageUrl", imageUrl)
+            }
+            holder.itemView.context.startActivity(intent)
+        }
         holder.viewPager.adapter = imageAdapter
         holder.dotsIndicator.setViewPager(holder.viewPager)
 
@@ -133,13 +142,22 @@ class PostAdapter(private val postList: MutableList<Post>) : RecyclerView.Adapte
 }
 
 // 圖片輪播適配器
-class ImagePagerAdapter(private val context: Context, private val imageUrls: List<String>) : PagerAdapter() {
+class ImagePagerAdapter(
+    private val context: Context,
+    private val imageUrls: List<String>,
+    private val onClick: (String) -> Unit
+) : PagerAdapter() {
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val imageView = ImageView(context)
         Glide.with(context)
             .load(imageUrls[position])
             .into(imageView)
+
+        // 設置點擊事件
+        imageView.setOnClickListener {
+            onClick(imageUrls[position])
+        }
 
         container.addView(imageView)
         return imageView
