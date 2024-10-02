@@ -12,6 +12,6 @@ def build_lstm_model(input_shape):
     model.add(Dropout(0.2))
     model.add(LSTM(units=64))
     model.add(Dropout(0.2))
-    model.add(Dense(units=10))  # 假設有 8 個輸出對應土壤因子
+    model.add(Dense(units=9))  # 假設有 8 個輸出對應土壤因子
     model.compile(optimizer='adam', loss='mean_squared_error')
     return model
