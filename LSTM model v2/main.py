@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from data_preprocessing import load_data, preprocess_data
-from train_predict import train_and_predict
+from train_predict import train_and_predict_with_grid_search
 from model_evaluation import evaluate_model
 
 # 設定參數
@@ -20,8 +20,8 @@ for target_col in target_columns:
     X_train, X_test = X[:train_size], X[train_size:]
     y_train, y_test = y[:train_size], y[train_size:]
 
-    # 訓練模型並預測
-    y_pred = train_and_predict(X_train, y_train, X_test, scaler, epochs=50, batch_size=32)
+    # 使用網格搜索訓練模型並預測
+    y_pred, best_params = train_and_predict_with_grid_search(X_train, y_train, X_test, scaler)
 
     # 反標準化 y_test 以便於比較
     y_test_actual = scaler.inverse_transform(y_test.reshape(-1, 1))
@@ -33,7 +33,7 @@ for target_col in target_columns:
     plt.figure(figsize=(12, 6))
     plt.plot(y_test_actual, label='Actual Values', color='blue')
     plt.plot(y_pred, label='Predicted Values', color='orange')
-    plt.title(f'Actual vs Predicted for {target_col}')
+    plt.title(f'Actual vs Predicted for {target_col} (Best Params: {best_params})')
     plt.xlabel('Time Steps')
     plt.ylabel(target_col)
     plt.legend()
@@ -42,3 +42,4 @@ for target_col in target_columns:
 
     print(f"Performance metrics for {target_col}:")
     print(f"MSE: {mse:.4f}, MAE: {mae:.4f}, RMSE: {rmse:.4f}")
+    print(f"Best Hyperparameters: {best_params}")
