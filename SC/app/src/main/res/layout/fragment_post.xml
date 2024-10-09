@@ -1,0 +1,125 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- 存草稿與發布按鈕 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <Button
+            android:id="@+id/save_draft_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#000000"
+            android:text="存草稿" />
+
+        <Button
+            android:id="@+id/publish_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#000000"
+            android:text="發布"
+            android:layout_marginStart="16dp" />
+    </LinearLayout>
+
+    <!-- 上傳數據與開關 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="上傳數據" />
+
+        <Switch
+            android:id="@+id/upload_data_switch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginStart="16dp" />
+    </LinearLayout>
+
+    <!-- 動態排列圖片與上傳按鈕區 -->
+    <com.google.android.flexbox.FlexboxLayout
+        android:id="@+id/flexbox_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        app:flexDirection="row"
+        app:flexWrap="wrap" />
+
+    <!-- 輸入發文內容 -->
+    <EditText
+        android:id="@+id/post_content"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="寫下文章內容"
+        android:layout_marginTop="16dp"
+        android:minHeight="100dp"
+        android:gravity="top|start"
+        android:padding="8dp"
+        android:background="@android:drawable/editbox_background" />
+
+    <!-- 可展開選項 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="16dp">
+
+        <TextView
+            android:id="@+id/add_subject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="新增主題"
+            android:drawableEnd="@android:drawable/ic_menu_more"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="16dp"
+            android:background="?android:attr/selectableItemBackground" />
+
+        <!-- 新增一個輸入框，用於輸入主題名稱 -->
+        <EditText
+            android:id="@+id/subject_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="輸入主題名稱"
+            android:padding="8dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:drawable/editbox_background" />
+
+        <TextView
+            android:id="@+id/add_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="新增地址"
+            android:drawableEnd="@android:drawable/ic_menu_more"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="16dp"
+            android:background="?android:attr/selectableItemBackground" />
+
+        <TextView
+            android:id="@+id/save_to_album"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="儲存至相簿"
+            android:drawableEnd="@android:drawable/ic_menu_more"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="16dp"
+            android:background="?android:attr/selectableItemBackground" />
+    </LinearLayout>
+
+</LinearLayout>

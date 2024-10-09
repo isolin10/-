@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- 返回按鈕 -->
+        <ImageButton
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_back_arrow"
+            android:contentDescription="Back"
+            android:background="?attr/selectableItemBackgroundBorderless" />
+
+        <!-- 植物名稱及圖片 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/plant_image"
+                android:layout_width="272dp"
+                android:layout_height="150dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_default_plant_image" />
+
+            <TextView
+                android:id="@+id/plant_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="植物名稱"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <!-- 表格顯示數據 -->
+        <TableLayout
+            android:id="@+id/data_table"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="*"
+            android:layout_marginTop="16dp"
+            android:padding="8dp">
+
+            <!-- 表格標題 -->
+            <TableRow>
+                <TextView android:text="紀錄時間" android:textStyle="bold" />
+                <TextView android:text="溫度" android:textStyle="bold" />
+                <TextView android:text="濕度" android:textStyle="bold" />
+                <TextView android:text="光照" android:textStyle="bold" />
+                <TextView android:text="PH" android:textStyle="bold" />
+                <TextView android:text="鹽度" android:textStyle="bold" />
+            </TableRow>
+
+        </TableLayout>
+
+        <!-- 按鈕顯示選項 -->
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/button_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:justifyContent="center"
+            app:alignItems="center"
+            app:flexWrap="nowrap"
+            android:padding="8dp"
+            android:layout_marginTop="16dp">
+
+            <!-- 溫度按鈕 -->
+            <Button
+                android:id="@+id/button_temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:text="溫度"
+                android:padding="8dp"
+                android:backgroundTint="@color/black"
+                android:textColor="@android:color/white" />
+
+            <!-- 濕度按鈕 -->
+            <Button
+                android:id="@+id/button_humd"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:text="濕度"
+                android:padding="8dp"
+                android:backgroundTint="@color/black"
+                android:textColor="@android:color/white" />
+
+            <!-- PH 按鈕 -->
+            <Button
+                android:id="@+id/button_ph"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:text="PH"
+                android:padding="8dp"
+                android:backgroundTint="@color/black"
+                android:textColor="@android:color/white" />
+
+            <!-- 光照按鈕 -->
+            <Button
+                android:id="@+id/button_light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:text="光照"
+                android:padding="8dp"
+                android:backgroundTint="@color/black"
+                android:textColor="@android:color/white" />
+
+            <!-- 鹽度按鈕 -->
+            <Button
+                android:id="@+id/button_salt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="4dp"
+                android:text="鹽度"
+                android:padding="8dp"
+                android:backgroundTint="@color/black"
+                android:textColor="@android:color/white" />
+
+        </com.google.android.flexbox.FlexboxLayout>
+
+        <!-- 折線圖 -->
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/line_chart"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_marginTop="16dp"
+            android:padding="16dp" />
+
+    </LinearLayout>
+
+</ScrollView>
