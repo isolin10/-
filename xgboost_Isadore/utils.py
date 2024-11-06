@@ -1,10 +1,11 @@
+#utils.py
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
-def plot_predictions(dates, y_true, y_pred, confidence_interval):
-    # 將日期轉換為小時級別 (假設每個日期都有 24 個小時的時間點)
-    hourly_dates = pd.date_range(start=dates.min(), end=dates.max(), freq='H')[:len(y_true)]
+def plot_predictions(dates, y_true, y_pred, confidence_interval, factor_name):
+    # 將日期轉換為小時級別並且長度匹配
+    hourly_dates = pd.date_range(start=dates.iloc[0], periods=len(y_true), freq='H')
     
     plt.figure(figsize=(12, 6))
     
@@ -21,10 +22,10 @@ def plot_predictions(dates, y_true, y_pred, confidence_interval):
     # 繪製信心區間
     plt.fill_between(hourly_dates, lower_bound, upper_bound, color='gray', alpha=0.5, label='95% Confidence Interval')
 
-    plt.title('True Values vs Predictions')
-    plt.xlabel('Date (Hourly)')
-    plt.ylabel('Temperature')
-    plt.xticks(rotation=45)
+    plt.title(f'{factor_name} Prediction vs True Value')
+    plt.xlabel('Date')
+    plt.ylabel(f'{factor_name}')
     plt.legend()
-    plt.tight_layout()
+    plt.xticks(rotation=45)
+    plt.grid(True)
     plt.show()
