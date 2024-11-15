@@ -1,65 +1,73 @@
-# main.py
-from data_processing import load_data, preprocess_data
-from xgboost_model import train_xgboost
-from utils import plot_predictions
-import os
-from lstm_model import train_lstm
+#main.py
+
 import numpy as np
+import os
+from data_preprocessing import load_data, preprocess_data, split_data
+from feature_analysis import perform_feature_analysis
+from lstm_model import build_lstm_model, train_lstm_model
+from visualization import plot_predictions, calculate_hit_rate, plot_with_confidence_interval
 
-
-# 設定正確的工作目錄
+# Set the correct working directory
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
-def main():
-    file_path = 'data2.csv'
- 
-    if not os.path.exists(file_path):
-        print(f'File {file_path} not found!')
-        return
+# Load and preprocess data
+filepath = "data2.csv"
+data = load_data(filepath)
+dates, features, scaler = preprocess_data(data)
 
-    data = load_data(file_path)
-    data = preprocess_data(data)
+# Split data into train and test sets
+train_features, test_features = split_data(features)
 
-    # 定義要預測的所有因子
-    target_columns = ['temp', 'humd', 'salt', 'ec', 'ph', 'n', 'p', 'k', 'light']
+# Prepare feature names (assuming the first column is 'date')
+feature_names = data.columns[1:].tolist()  # Ignore the 'date' column
 
-    # 訓練並預測 XGBoost 模型
-    models, test_sets, predictions_dict, confidence_intervals, hit_rates = train_xgboost(data, target_columns)
+# Iterate over each factor for feature analysis and LSTM prediction
+for target_column in range(features.shape[1]):  # Loop through all factors (columns)
+    factor_name = feature_names[target_column]
+    print(f"\nProcessing {factor_name}...")
 
-    # 使用 XGBoost 預測結果作為 LSTM 的輸入
-    print("Training LSTM model using XGBoost features...")
-    lstm_model = train_lstm(data, predictions_dict)
+    # Step 1: Perform feature importance analysis using XGBoost
+    feature_importance_df = perform_feature_analysis(train_features, target_column, feature_names)
+    print(f"Feature Importances for {factor_name}:\n", feature_importance_df)
 
-    # 顯示命中率，並使用 LSTM 進行預測
-    for target_column in target_columns:
-        X_test, y_test = test_sets[target_column]
-        predictions = predictions_dict[target_column]
-        confidence_interval = confidence_intervals[target_column]
-        factor_name = target_column
+    # Step 2: Prepare data for LSTM
+    look_back = 5
+    X_train, y_train = [], []
+    X_test, y_test = [], []
 
-        # 繪製 XGBoost 預測結果的圖表
-        print(f'Plotting for XGBoost predictions for {target_column}...')
-        plot_predictions(data['date'].iloc[X_test.index], y_test, predictions, confidence_interval, factor_name)
-     
-        # 使用 LSTM 進行預測
-        X_test_lstm = np.array(X_test)
-        X_test_lstm = X_test_lstm.reshape((X_test_lstm.shape[0], 1, X_test_lstm.shape[1]))  # 調整為 LSTM 所需的形狀
-        lstm_predictions = lstm_model.predict(X_test_lstm)  # LSTM 預測結果
+    # Train data preparation
+    for i in range(look_back, len(train_features)):
+        X_train.append(train_features[i - look_back:i])
+        y_train.append(train_features[i, target_column])
 
-        # 計算 LSTM 預測結果的 MSE, RMSE 和 MAE
-        lstm_mse = np.mean((lstm_predictions - y_test) ** 2)
-        lstm_rmse = np.sqrt(lstm_mse)
-        lstm_mae = np.mean(np.abs(lstm_predictions - y_test))
-        lstm_confidence_interval = 1.96 * (lstm_mse) ** 0.5
+    # Test data preparation
+    for i in range(look_back, len(test_features)):
+        X_test.append(test_features[i - look_back:i])
+        y_test.append(test_features[i, target_column])
 
-        print(f'LSTM MSE for {target_column}: {lstm_mse}')
-        print(f'LSTM RMSE for {target_column}: {lstm_rmse}')
-        print(f'LSTM MAE for {target_column}: {lstm_mae}')
-        print(f'95% Confidence Interval for LSTM {target_column}: +/- {lstm_confidence_interval}')
+    X_train, y_train = np.array(X_train), np.array(y_train)
+    X_test, y_test = np.array(X_test), np.array(y_test)
 
-        # 繪製 LSTM 預測結果的圖表
-        print(f'Plotting for LSTM predictions for {target_column}...')
-        plot_predictions(data['date'].iloc[X_test.index], y_test, lstm_predictions, lstm_confidence_interval, factor_name)
+    # Step 3: Build and train the LSTM model
+    input_shape = (X_train.shape[1], X_train.shape[2])
+    model = build_lstm_model(input_shape)
+    model = train_lstm_model(model, X_train, y_train)
 
-if __name__ == '__main__':
-    main()
+    # Step 4: Make predictions
+    predicted_test_values = model.predict(X_test)
+
+    # Step 5: Reverse scaling of predictions to original scale
+    predicted_test_values_rescaled = scaler.inverse_transform(np.hstack([test_features[look_back:, :target_column], predicted_test_values, test_features[look_back:, target_column + 1:]]))[:, target_column]
+    y_test_rescaled = scaler.inverse_transform(np.hstack([test_features[look_back:, :target_column], y_test.reshape(-1, 1), test_features[look_back:, target_column + 1:]]))[:, target_column]
+
+    # Step 6: Visualize predictions
+    dates_test = dates[-len(y_test):]
+    plot_predictions(dates_test, y_test_rescaled, predicted_test_values_rescaled, factor_name)
+
+    # Step 7: Calculate hit rate
+    hit_rate, lower_bound, upper_bound = calculate_hit_rate(y_test_rescaled, predicted_test_values_rescaled)
+    print(f"Hit Rate for {factor_name}: {hit_rate:.2f}%")
+    print(f"95% Confidence Interval for {factor_name}: [{lower_bound:.2f}, {upper_bound:.2f}]")
+
+    # Step 8: Plot with confidence interval
+    plot_with_confidence_interval(dates_test, y_test_rescaled, predicted_test_values_rescaled, factor_name, train_features)
