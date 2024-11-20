@@ -6,6 +6,7 @@ from data_preprocessing import load_data, preprocess_data, split_data
 from feature_analysis import perform_feature_analysis
 from lstm_model import build_lstm_model, train_lstm_model
 from visualization import plot_predictions, calculate_hit_rate, plot_with_confidence_interval
+import matplotlib.pyplot as plt
 
 # Set the correct working directory
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -116,7 +117,14 @@ for target_column in range(features.shape[1]):  # Loop through all factors (colu
         # Build and train the LSTM model
         input_shape = (X_train.shape[1], X_train.shape[2])
         model = build_lstm_model(input_shape, lstm_units=param_dict['lstm_units'])
-        model = train_lstm_model(model, X_train, y_train, epochs=param_dict['epochs'], batch_size=param_dict['batch_size'])
+        model = train_lstm_model(
+            model, 
+            X_train, 
+            y_train, 
+            epochs=param_dict['epochs'], 
+            batch_size=param_dict['batch_size'], 
+            patience=5  # 提前停止的耐心次數
+        )
 
         # Calculate Bias, Variance, and MSE
         bias, variance, train_mse, test_mse, train_test_mse = calculate_bias_variance(model, X_train, y_train, X_test, y_test)
@@ -169,3 +177,31 @@ for target_column in range(features.shape[1]):  # Loop through all factors (colu
     print(f"Best Train MSE for {factor_name}: {best_train_mse:.4f}")
     print(f"Best Test MSE for {factor_name}: {best_test_mse:.4f}")
     print(f"Best Test/Train MSE for {factor_name}: {best_test_train:.4f}")
+
+     # 使用最佳參數重新訓練並驗證
+    look_back = best_params['look_back']
+    X_train, y_train = [], []
+    X_test, y_test = [], []
+    for i in range(look_back, len(train_features)):
+        X_train.append(train_features[i - look_back:i])
+        y_train.append(train_features[i, target_column])
+    for i in range(look_back, len(test_features)):
+        X_test.append(test_features[i - look_back:i])
+        y_test.append(test_features[i, target_column])
+    X_train, y_train = np.array(X_train), np.array(y_train)
+    X_test, y_test = np.array(X_test), np.array(y_test)
+
+    # 建立並訓練最佳模型
+    model = build_lstm_model((X_train.shape[1], X_train.shape[2]), lstm_units=best_params['lstm_units'])
+    history = model.fit(X_train, y_train, epochs=best_params['epochs'], batch_size=best_params['batch_size'], validation_data=(X_test, y_test), verbose=0)
+
+    # 繪製訓練和驗證錯誤曲線
+    plt.figure(figsize=(10, 6))
+    plt.plot(history.history['loss'], label='Train Error')
+    plt.plot(history.history['val_loss'], label='Validation Error')
+    plt.title(f"{factor_name} - Training and Validation Errors")
+    plt.xlabel("Epochs")
+    plt.ylabel("MSE")
+    plt.legend()
+    plt.grid()
+    plt.show()
