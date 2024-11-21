@@ -114,6 +114,8 @@ for target_column in range(features.shape[1]):  # Loop through all factors (colu
         X_train, y_train = np.array(X_train), np.array(y_train)
         X_test, y_test = np.array(X_test), np.array(y_test)
 
+        print(X_train.shape)
+
         # Build and train the LSTM model
         input_shape = (X_train.shape[1], X_train.shape[2])
         model = build_lstm_model(input_shape, lstm_units=param_dict['lstm_units'])
