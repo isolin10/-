@@ -72,8 +72,9 @@ for target_column in range(features.shape[1]):  # Loop through all factors (colu
     print(f"\nProcessing {factor_name}...")
 
     # Step 1: Perform feature importance analysis using XGBoost
-    feature_importance_df = perform_feature_analysis(train_features, target_column, feature_names)
+    feature_importance_df, top_feature_indices = perform_feature_analysis(train_features, target_column, feature_names)
     print(f"Feature Importances for {factor_name}:\n", feature_importance_df)
+    print(f"Top Features for {factor_name}: {top_feature_indices}")
 
     # Step 2: Hyperparameter tuning for LSTM
     best_hit_rate = -1
@@ -96,25 +97,26 @@ for target_column in range(features.shape[1]):  # Loop through all factors (colu
         param_dict = dict(zip(hyperparameter_grid.keys(), params))
         print(f"Testing parameters: {param_dict}")
 
+        selected_train_features = train_features[:, top_feature_indices]
+        selected_test_features = test_features[:, top_feature_indices]
+
         # Prepare data for LSTM with current look_back
         look_back = param_dict['look_back']
         X_train, y_train = [], []
         X_test, y_test = [], []
 
         # Train data preparation
-        for i in range(look_back, len(train_features)):
-            X_train.append(train_features[i - look_back:i])
+        for i in range(look_back, len(selected_train_features)):
+            X_train.append(selected_train_features[i - look_back:i])
             y_train.append(train_features[i, target_column])
 
         # Test data preparation
-        for i in range(look_back, len(test_features)):
-            X_test.append(test_features[i - look_back:i])
+        for i in range(look_back, len(selected_test_features)):
+            X_test.append(selected_test_features[i - look_back:i])
             y_test.append(test_features[i, target_column])
 
         X_train, y_train = np.array(X_train), np.array(y_train)
         X_test, y_test = np.array(X_test), np.array(y_test)
-
-        print(X_train.shape)
 
         # Build and train the LSTM model
         input_shape = (X_train.shape[1], X_train.shape[2])
@@ -184,15 +186,17 @@ for target_column in range(features.shape[1]):  # Loop through all factors (colu
     look_back = best_params['look_back']
     X_train, y_train = [], []
     X_test, y_test = [], []
-    for i in range(look_back, len(train_features)):
-        X_train.append(train_features[i - look_back:i])
-        y_train.append(train_features[i, target_column])
-    for i in range(look_back, len(test_features)):
-        X_test.append(test_features[i - look_back:i])
+    for i in range(look_back, len(selected_train_features)):
+            X_train.append(selected_train_features[i - look_back:i])
+            y_train.append(train_features[i, target_column])
+
+        # Test data preparation
+    for i in range(look_back, len(selected_test_features)):
+        X_test.append(selected_test_features[i - look_back:i])
         y_test.append(test_features[i, target_column])
+
     X_train, y_train = np.array(X_train), np.array(y_train)
     X_test, y_test = np.array(X_test), np.array(y_test)
-
     # 建立並訓練最佳模型
     model = build_lstm_model((X_train.shape[1], X_train.shape[2]), lstm_units=best_params['lstm_units'])
     history = model.fit(X_train, y_train, epochs=best_params['epochs'], batch_size=best_params['batch_size'], validation_data=(X_test, y_test), verbose=0)
