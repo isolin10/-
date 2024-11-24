@@ -7,6 +7,7 @@ from feature_analysis import perform_feature_analysis
 from lstm_model import build_lstm_model, train_lstm_model
 from visualization import plot_predictions, calculate_hit_rate, plot_with_confidence_interval
 import matplotlib.pyplot as plt
+from firebase_utils import initialize_firebase
 
 # Set the correct working directory
 os.chdir(os.path.dirname(os.path.abspath(__file__)))

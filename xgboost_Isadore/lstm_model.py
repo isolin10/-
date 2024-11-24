@@ -11,7 +11,6 @@ def build_lstm_model(input_shape, lstm_units=50):
     """
     model = Sequential([
         LSTM(lstm_units, return_sequences=True, input_shape=input_shape),
-        Dense(1),
         LSTM(lstm_units, return_sequences=False),
         Dense(1)
     ])
