@@ -1,24 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
-    <FrameLayout
-        android:id="@+id/fragment_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"/>
 
+    <!-- 搜索栏 -->
     <LinearLayout
         android:id="@+id/search_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="8dp"
-        android:layout_gravity="top"
-        >
+        android:layout_gravity="top">
 
         <EditText
             android:id="@+id/search_field"
@@ -33,20 +29,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/search" />
-
     </LinearLayout>
 
+    <!-- 內容區域 -->
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="56dp"
+    />
 
-    <!-- Your content here (RecyclerView, FrameLayout, etc.) -->
-
+    <!-- 底部導航欄 -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:layout_gravity="bottom"
         app:menu="@menu/bottom_navigation_menu"
         app:itemIconTint="@color/bottom_nav_item_color"
-    app:itemTextColor="@color/bottom_nav_item_color"
-       />
+        app:itemTextColor="@color/bottom_nav_item_color" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -13,6 +13,13 @@
     <string name="search_hint">搜索用戶名，主題或問題</string>
     <string name="search">搜索</string>
     <string name="user_id">User ID</string>
+    <string name="binding_title">綁定注意事項</string>
+    <string name="binding_instructions">請確認以下四點：\n1. 開啟藍芽進行匹配。\n2. 綁定裝置與感測器保持在10公尺內。\n3. 避免感測器受到遮蔽或門等障礙物。\n4. 確保系統在 IOS 16.1 版本 / Android 4.0 版本以上。</string>
+    <string name="next">下一步</string>
+
     <string name="username">使用者名稱</string>
+    <string name="binding_success">綁定成功</string>
+    <string name="confirm">確認</string>
+    <string name="binding_success_image">綁定成功圖片</string>
     <!-- 其他字符串资源 -->
 </resources>

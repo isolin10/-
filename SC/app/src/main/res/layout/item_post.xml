@@ -28,6 +28,13 @@
             android:text="Username"
             android:textSize="16sp"
             android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/statistics_button"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_statistics"
+            android:layout_marginEnd="8dp"
+            android:contentDescription="Statistics Button" />
 
         <ImageView
             android:id="@+id/post_menu"
@@ -48,7 +55,7 @@
             android:id="@+id/post_viewpager"
             android:layout_width="match_parent"
             android:layout_height="150dp"
-        android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp" />
 
         <!-- DotsIndicator for image navigation -->
         <com.tbuonomo.viewpagerdotsindicator.DotsIndicator
@@ -60,60 +67,69 @@
             android:theme="@style/CustomDotsIndicatorStyle"/>
     </LinearLayout>
 
-    <!-- 主題顯示 -->
-    <TextView
-        android:id="@+id/post_subject"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="主題"
-        android:theme="@style/CustomTagStyle"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp" />
-
-    <!-- 文章內容 -->
-    <TextView
-        android:id="@+id/content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Post content" />
-
-    <!-- 點讚和留言 -->
+    <!-- 主題與點讚和留言平行排列 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="end"
         android:orientation="horizontal"
-        android:paddingTop="8dp">
+        android:layout_marginTop="8dp"
+        android:padding="8dp">
 
-        <!-- 點讚 -->
-        <ImageView
-            android:id="@+id/like_button"
-            android:layout_width="27dp"
-            android:layout_height="24dp"
-            android:layout_marginEnd="8dp"
-            android:contentDescription="Like"
-            android:src="@drawable/ic_heart_outline" />
-
+        <!-- 主題 -->
         <TextView
-            android:id="@+id/like_count"
+            android:id="@+id/post_subject"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0" />
+            android:background="@drawable/rounded_tag_background"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="4dp"
+            android:text="主題"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:theme="@style/CustomTagStyle" />
 
-        <!-- 留言 -->
-        <ImageView
-            android:id="@+id/comment_button"
-            android:layout_width="wrap_content"
+        <!-- 點讚和留言 -->
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_comment"
-            android:layout_marginStart="16dp"/>
+            android:orientation="horizontal"
+            android:layout_weight="1"
+            android:gravity="end">
 
-        <TextView
-            android:id="@+id/comment_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="0" />
+            <ImageView
+                android:id="@+id/like_button"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="4dp"
+                android:contentDescription="Like"
+                android:src="@drawable/ic_heart_outline" />
+
+            <TextView
+                android:id="@+id/like_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0" />
+
+            <ImageView
+                android:id="@+id/comment_button"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="16dp"
+                android:contentDescription="Comment"
+                android:src="@drawable/ic_comment" />
+
+            <TextView
+                android:id="@+id/comment_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:layout_marginStart="4dp" />
+
+        </LinearLayout>
     </LinearLayout>
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginTop="8dp" />
 </LinearLayout>

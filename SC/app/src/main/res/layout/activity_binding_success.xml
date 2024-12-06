@@ -1,0 +1,25 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="16dp">
+
+    <!-- 綁定成功圖片 -->
+
+    <!-- 綁定成功文字 -->
+    <ImageView
+        android:id="@+id/success_image"
+        android:layout_width="390dp"
+        android:layout_height="375dp"
+        android:contentDescription="@string/binding_success_image"
+        android:src="@drawable/binding_success_image" />
+
+    <!-- 確認按鈕 -->
+    <Button
+        android:id="@+id/confirm_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/confirm"
+        style="@style/MyButtonStyle" />
+</LinearLayout>

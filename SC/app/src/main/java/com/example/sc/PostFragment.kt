@@ -11,9 +11,12 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import com.google.android.flexbox.FlexboxLayout
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import java.util.UUID
 
@@ -22,6 +25,7 @@ class PostFragment : Fragment() {
     private lateinit var saveDraftButton: Button
     private lateinit var publishButton: Button
     private lateinit var uploadDataSwitch: Switch
+    private lateinit var sensorSpinner: Spinner
     private lateinit var flexboxLayout: FlexboxLayout
     private lateinit var uploadImageButton: Button
     private lateinit var postContent: EditText
@@ -36,6 +40,10 @@ class PostFragment : Fragment() {
     private val storage = FirebaseStorage.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
+    // 感測器相關變數
+    private val sensorList = mutableListOf<String>()
+    private val sensorMap = mutableMapOf<String, String>() // 儲存感測器名稱和其 ID
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -46,6 +54,7 @@ class PostFragment : Fragment() {
         saveDraftButton = view.findViewById(R.id.save_draft_button)
         publishButton = view.findViewById(R.id.publish_button)
         uploadDataSwitch = view.findViewById(R.id.upload_data_switch)
+        sensorSpinner = view.findViewById(R.id.sensor_spinner)
         flexboxLayout = view.findViewById(R.id.flexbox_layout)
         uploadImageButton = createUploadButton()
         postContent = view.findViewById(R.id.post_content)
@@ -69,6 +78,9 @@ class PostFragment : Fragment() {
         addSubject.setOnClickListener {
             toggleSubjectInput()
         }
+
+        // 載入感測器資料
+        loadSensorData()
 
         return view
     }
@@ -168,8 +180,7 @@ class PostFragment : Fragment() {
             subject = subject, // 新增主題
             imageUrls = imageUrls,
             timestamp = System.currentTimeMillis(),
-            likes = 0,
-            comments = 0
+            likes = 0
         )
 
         db.child("posts").child(postId)
@@ -197,5 +208,31 @@ class PostFragment : Fragment() {
 
     private fun saveDraft() {
         // Save draft logic here
+    }
+
+    private fun loadSensorData() {
+        val database = FirebaseDatabase.getInstance().reference.child("sensors")
+        database.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                sensorList.clear()
+                sensorMap.clear()
+
+                for (sensorSnapshot in snapshot.children) {
+                    val sensorName = sensorSnapshot.child("sensorName").value?.toString() ?: "未知感測器"
+                    val sensorId = sensorSnapshot.key ?: continue
+                    sensorList.add(sensorName)
+                    sensorMap[sensorName] = sensorId
+                }
+
+                // 更新 Spinner 的選項
+                val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, sensorList)
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                sensorSpinner.adapter = adapter
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(requireContext(), "感測器資料加載失敗", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }

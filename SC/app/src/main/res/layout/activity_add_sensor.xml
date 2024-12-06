@@ -1,0 +1,98 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white"
+    android:padding="16dp">
+
+    <!-- 返回按鈕與標題 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingBottom="16dp">
+
+        <ImageView
+            android:id="@+id/back_button"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_back_arrow"
+            android:contentDescription="返回"
+            android:layout_marginEnd="16dp" />
+
+        <TextView
+            android:id="@+id/add_sensor_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="添加感測器"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- 初始設置資訊標題 -->
+    <TextView
+        android:id="@+id/initial_setup_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="初始設置資訊"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:paddingBottom="8dp"
+        android:textColor="@color/black" />
+
+    <!-- 感測器名稱標籤 -->
+    <TextView
+        android:id="@+id/sensor_name_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="感測器名稱"
+        android:textSize="14sp"
+        android:textColor="@color/black"
+        android:layout_marginBottom="4dp" />
+
+    <!-- 感測器名稱 -->
+    <EditText
+        android:id="@+id/sensor_name_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="輸入感測器名稱"
+        android:inputType="text"
+        android:backgroundTint="@color/light_gray"
+        android:padding="12dp"
+        android:layout_marginBottom="16dp" />
+
+    <!-- 作物種類標籤 -->
+    <TextView
+        android:id="@+id/crop_type_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="作物種類"
+        android:textSize="14sp"
+        android:textColor="@color/black"
+        android:layout_marginBottom="4dp" />
+
+    <!-- 作物種類 -->
+    <EditText
+        android:id="@+id/crop_type_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="輸入作物種類"
+        android:background="@color/light_gray"
+        android:padding="10dp"
+        android:textSize="14sp"
+        android:layout_marginBottom="16dp" />
+
+    <!-- 下一步按鈕 -->
+    <Button
+        android:id="@+id/next_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="下一步"
+        android:backgroundTint="@color/black"
+        android:textColor="@color/white"
+        android:padding="12dp"
+        android:layout_marginTop="24dp"
+        android:textSize="16sp" />
+</LinearLayout>

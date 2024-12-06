@@ -11,7 +11,7 @@ data class Post(
     val imageUrls: List<String>? = null,  // 貼文多張圖片URL
     val subject: String? = null ,// 貼文主題
     var likes: Int = 0,   // 新增愛心數
-    var comments: Int = 0, // 新增留言數
+   // val comments: Map<String, Any>? = null, // 新增留言數
     var isLikedByUser: Boolean = false // 使用者是否已點讚
 
 

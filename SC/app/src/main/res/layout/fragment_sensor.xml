@@ -1,18 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:padding="16dp">
 
-    <!-- 其他UI元素 -->
+    <!-- 感測器清單 -->
+    <LinearLayout
+        android:id="@+id/sensor_list_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" />
 
+    <!-- 新增感測器按鈕 -->
     <Button
         android:id="@+id/add_sensor_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="+ 新增感測器"
-        android:layout_gravity="center"
-        android:backgroundTint="@android:color/holo_blue_light"
+        android:layout_marginTop="16dp"
+        style="@style/MyButtonStyle"
         android:textColor="@android:color/white" />
 
-</FrameLayout>
+</LinearLayout>

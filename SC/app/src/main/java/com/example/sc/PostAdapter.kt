@@ -7,14 +7,19 @@ import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.bumptech.glide.Glide
+import com.example.sc.CommentsBottomSheetFragment
 import com.example.sc.PlantDataActivity
 import com.example.sc.Post
 import com.example.sc.R
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator
 
 class PostAdapter(private val postList: MutableList<Post>) : RecyclerView.Adapter<PostAdapter.PostViewHolder>() {
@@ -24,9 +29,9 @@ class PostAdapter(private val postList: MutableList<Post>) : RecyclerView.Adapte
         val profileImageView: ImageView = itemView.findViewById(R.id.profile_image)
         val viewPager: ViewPager = itemView.findViewById(R.id.post_viewpager)
         val dotsIndicator: DotsIndicator = itemView.findViewById(R.id.dots_indicator)
-        val contentTextView: TextView = itemView.findViewById(R.id.content)
-        val subjectTextView: TextView = itemView.findViewById(R.id.post_subject) // 顯示主題
+        val subjectTextView: TextView = itemView.findViewById(R.id.post_subject)
         val postMenu: ImageView = itemView.findViewById(R.id.post_menu)
+        val statisticsButton: ImageView = itemView.findViewById(R.id.statistics_button) // 新的按鈕
 
         // 愛心與留言的按鈕與計數器
         val likeButton: ImageView = itemView.findViewById(R.id.like_button)
@@ -44,8 +49,7 @@ class PostAdapter(private val postList: MutableList<Post>) : RecyclerView.Adapte
         val post = postList[position]
 
         holder.usernameTextView.text = post.username
-        holder.contentTextView.text = post.content
-        holder.subjectTextView.text = post.subject ?: "無主題" // 顯示主題
+        holder.subjectTextView.text = post.subject ?: "無主題"
 
         // 使用 Glide 加載使用者頭像
         Glide.with(holder.itemView.context)
@@ -56,19 +60,27 @@ class PostAdapter(private val postList: MutableList<Post>) : RecyclerView.Adapte
         // 加載多張圖片
         val imageUrls = post.imageUrls ?: emptyList()
         val imageAdapter = ImagePagerAdapter(holder.itemView.context, imageUrls) { imageUrl ->
-            // 這裡實現點擊事件跳轉到 PlantDataActivity
-            val intent = Intent(holder.itemView.context, PlantDataActivity::class.java).apply {
-                putExtra("subject", post.subject)
-                putExtra("imageUrl", imageUrl)
-            }
-            holder.itemView.context.startActivity(intent)
+            // 跳轉到留言頁面 (例如 BottomSheetFragment)
+            val activity = holder.itemView.context as AppCompatActivity
+            val fragment = CommentsBottomSheetFragment.newInstance(post.postId!!)
+            fragment.show(activity.supportFragmentManager, "CommentsBottomSheet")
         }
+
         holder.viewPager.adapter = imageAdapter
         holder.dotsIndicator.setViewPager(holder.viewPager)
 
+        // 點擊數據按鈕跳轉到數據頁面
+        holder.statisticsButton.setOnClickListener {
+            val intent = Intent(holder.itemView.context, PlantDataActivity::class.java).apply {
+                putExtra("subject", post.subject)
+                putExtra("imageUrl", post.imageUrls?.getOrNull(0)) // 傳遞第一張圖片 URL 作為示例
+            }
+            holder.itemView.context.startActivity(intent)
+        }
+
         // 設置愛心數與留言數
         holder.likeCountTextView.text = post.likes.toString()
-        holder.commentCountTextView.text = post.comments.toString()
+        //holder.commentCountTextView.text = post.comments.toString()
 
         // 點擊愛心按鈕
         holder.likeButton.setOnClickListener {
@@ -92,15 +104,13 @@ class PostAdapter(private val postList: MutableList<Post>) : RecyclerView.Adapte
 
         // 點擊留言按鈕
         holder.commentButton.setOnClickListener {
-            // 跳轉到留言頁面或處理留言邏輯
-            post.comments += 1
-
-            // 更新 Firebase 中的留言數
-            val database = FirebaseDatabase.getInstance().reference
-            database.child("posts").child(post.postId!!).child("comments").setValue(post.comments)
-
-            holder.commentCountTextView.text = post.comments.toString()
+            val activity = holder.itemView.context as AppCompatActivity
+            val fragment = CommentsBottomSheetFragment.newInstance(post.postId!!)
+            fragment.show(activity.supportFragmentManager, "CommentsBottomSheet")
         }
+
+        // 更新 Firebase 中的留言數
+        updateCommentCount(post.postId!!, holder.commentCountTextView)
 
         // 選單功能
         holder.postMenu.setOnClickListener {
@@ -118,6 +128,22 @@ class PostAdapter(private val postList: MutableList<Post>) : RecyclerView.Adapte
             popupMenu.show()
         }
     }
+
+    private fun updateCommentCount(postId: String, commentCountTextView: TextView) {
+        val database = FirebaseDatabase.getInstance().reference
+        database.child("posts").child(postId).child("comments")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val commentCount = snapshot.childrenCount.toInt()
+                    commentCountTextView.text = commentCount.toString()
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // 可選: 錯誤處理
+                }
+            })
+    }
+
 
     private fun deletePost(context: Context, post: Post, position: Int) {
         val database = FirebaseDatabase.getInstance().reference

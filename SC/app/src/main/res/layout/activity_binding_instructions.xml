@@ -1,0 +1,44 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- 返回按鈕 -->
+    <ImageView
+        android:id="@+id/back_button"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_back_arrow"
+        android:contentDescription="Back"
+        android:layout_marginBottom="16dp" />
+
+    <!-- 標題 -->
+    <TextView
+        android:id="@+id/title_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="綁定注意事項"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="16dp" />
+
+    <!-- 注意事項內容 -->
+    <TextView
+        android:id="@+id/binding_instructions"
+        android:layout_width="match_parent"
+        android:layout_height="136dp"
+        android:layout_marginBottom="16dp"
+        android:text="請確認以下四點：\n1. 開啟藍芽進行匹配。\n2. 綁定裝置與感測器保持在10公尺內。\n3. 避免感測器受到遮蔽或門等障礙物。\n4. 確保系統在 IOS 16.1 版本 / Android 4.0 版本以上。"
+        android:textSize="16sp" />
+
+    <!-- 下一步按鈕 -->
+    <Button
+        android:id="@+id/next_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="下一步"
+        style="@style/MyButtonStyle" />
+
+</LinearLayout>

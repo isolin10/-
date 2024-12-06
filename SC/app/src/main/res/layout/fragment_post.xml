@@ -31,24 +31,42 @@
     </LinearLayout>
 
     <!-- 上傳數據與開關 -->
+    <!-- 在上傳數據的LinearLayout中新增感測器選擇功能 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_marginTop="16dp">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <!-- 上傳數據開關 -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="上傳數據" />
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
 
-        <Switch
-            android:id="@+id/upload_data_switch"
-            android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="上傳數據" />
+
+            <Switch
+                android:id="@+id/upload_data_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp" />
+        </LinearLayout>
+
+        <!-- 感測器清單 -->
+        <Spinner
+            android:id="@+id/sensor_spinner"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:layout_marginStart="16dp" />
+            android:background="@android:drawable/editbox_background"
+            android:padding="8dp" />
+        
     </LinearLayout>
+
 
     <!-- 動態排列圖片與上傳按鈕區 -->
     <com.google.android.flexbox.FlexboxLayout

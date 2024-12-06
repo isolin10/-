@@ -33,5 +33,13 @@
         <activity android:name=".ProfileFragment" />
         <activity android:name=".PostFragment" />
         <activity android:name=".PlantDataActivity" />
+        <activity android:name=".SensorFragment" />
+        <activity android:name=".SensorDataActivity" />
+        <activity android:name=".NotificationsFragment" />
+        <activity android:name=".AddSensorActivity" />
+        <activity android:name=".BindingInstructionsActivity" />
+        <activity android:name=".BindingSuccessActivity" />
+
+
     </application>
 </manifest>
